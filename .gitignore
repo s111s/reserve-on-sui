@@ -1,0 +1,33 @@
+node_modules/
+dist/
+.env
+*.log
+.DS_Store
+build/
+
+# Sui Move
+src/contracts/build/
+
+# Runtime data — server state (points deductions, vouchers)
+data/points.json
+data/salts.json
+data/vouchers.json
+
+# Local dev scratch files
+curl.txt
+
+# !! SECRETS — never commit !!
+TESTNET_ENV.txt
+temp.env
+
+# Claude Code memory (local only)
+memory/
+
+# Internal planning / ops docs — not for public repo
+CLAUDE.md
+PLAN.md
+DEPLOYMENT.md
+SERVER_SETUP.md
+SERVER_COMMANDS.md
+SMART_CONTRACT_GUIDE.md
+AAPPOINT.md

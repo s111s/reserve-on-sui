@@ -1,0 +1,76 @@
+# Cloud Build — matches aappoint-api / aappoint-reserve-with-google pattern.
+steps:
+  # Step 1: fetch VITE_* secrets (cloud-sdk has gcloud; docker builder does not)
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk
+    id: prepare
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        set -euo pipefail
+        : > /workspace/build-args.env
+        for key in \
+          VITE_SUI_NETWORK \
+          VITE_FEE_RECEIVER_ADDRESS \
+          VITE_PACKAGE_ID \
+          VITE_COIN_PACKAGE_ID \
+          VITE_POINTS_LEDGER_ID \
+          VITE_TIER_REGISTRY_ID \
+          VITE_TIER_CONFIG_ID \
+          VITE_GOOGLE_CLIENT_ID; do
+          val=$$(gcloud secrets versions access latest --secret="${_SECRET_PREFIX}_$$key" | tr -d '\r')
+          printf '%s=%s\n' "$$key" "$$val" >> /workspace/build-args.env
+        done
+        cat /workspace/build-args.env
+
+  # Step 2: docker build using fetched build args
+  - name: gcr.io/cloud-builders/docker
+    id: build
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        set -euo pipefail
+        source /workspace/build-args.env
+        docker build \
+          --build-arg VITE_SUI_NETWORK="$$VITE_SUI_NETWORK" \
+          --build-arg VITE_FEE_RECEIVER_ADDRESS="$$VITE_FEE_RECEIVER_ADDRESS" \
+          --build-arg VITE_PACKAGE_ID="$$VITE_PACKAGE_ID" \
+          --build-arg VITE_COIN_PACKAGE_ID="$$VITE_COIN_PACKAGE_ID" \
+          --build-arg VITE_POINTS_LEDGER_ID="$$VITE_POINTS_LEDGER_ID" \
+          --build-arg VITE_TIER_REGISTRY_ID="$$VITE_TIER_REGISTRY_ID" \
+          --build-arg VITE_TIER_CONFIG_ID="$$VITE_TIER_CONFIG_ID" \
+          --build-arg VITE_GOOGLE_CLIENT_ID="$$VITE_GOOGLE_CLIENT_ID" \
+          -t asia.gcr.io/$PROJECT_ID/${_SERVICE_NAME}:$SHORT_SHA \
+          .
+
+  - name: gcr.io/cloud-builders/docker
+    id: push
+    args: ['push', 'asia.gcr.io/$PROJECT_ID/${_SERVICE_NAME}:$SHORT_SHA']
+
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk
+    id: deploy
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        set -euo pipefail
+        secrets=$$(bash scripts/gcp/cloudrun-set-secrets.sh "${_SECRET_PREFIX}")
+        gcloud run deploy ${_SERVICE_NAME} \
+          --image asia.gcr.io/$PROJECT_ID/${_SERVICE_NAME}:$SHORT_SHA \
+          --region asia-southeast1 \
+          --platform managed \
+          --allow-unauthenticated \
+          --port 8080 \
+          --set-secrets "$$secrets"
+
+images:
+  - asia.gcr.io/$PROJECT_ID/${_SERVICE_NAME}:$SHORT_SHA
+
+substitutions:
+  _SERVICE_NAME: dev-sui-booking-point-collect
+  _SECRET_PREFIX: dev-sui-booking
+
+options:
+  substitutionOption: ALLOW_LOOSE
+  logging: CLOUD_LOGGING_ONLY

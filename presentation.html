@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Reserve on Sui — Presentation</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/black.css" />
+<style>
+  :root {
+    --sui-teal:   #4DA2FF;
+    --sui-accent: #39d2c0;
+    --gold:       #d4a843;
+    --red:        #f85149;
+    --green:      #3fb950;
+    --dim:        #8b949e;
+    --card-bg:    rgba(255,255,255,0.05);
+    --border:     rgba(255,255,255,0.1);
+  }
+
+  .reveal { font-family: "Segoe UI", -apple-system, system-ui, sans-serif; }
+  .reveal h1, .reveal h2, .reveal h3 { text-transform: none; letter-spacing: -0.02em; }
+  .reveal h1 { font-size: 2.4em; font-weight: 800; }
+  .reveal h2 { font-size: 1.6em; font-weight: 700; }
+  .reveal p, .reveal li { font-size: 0.82em; line-height: 1.65; }
+
+  /* ── Slide types ───────────────────────── */
+  .slide-cover    { background: radial-gradient(ellipse at 30% 50%, #0d2040 0%, #06090f 70%); }
+  .slide-problem  { background: radial-gradient(ellipse at 70% 30%, #1a0a0a 0%, #06090f 70%); }
+  .slide-solution { background: radial-gradient(ellipse at 30% 70%, #061a14 0%, #06090f 70%); }
+  .slide-dark     { background: #06090f; }
+  .slide-sui      { background: radial-gradient(ellipse at 50% 0%, #0a1a2e 0%, #06090f 70%); }
+
+  /* ── Teal accent headings ──────────────── */
+  .accent   { color: var(--sui-accent); }
+  .blue     { color: var(--sui-teal); }
+  .gold     { color: var(--gold); }
+  .red      { color: var(--red); }
+  .green    { color: var(--green); }
+  .dim      { color: var(--dim); }
+
+  /* ── Cards ─────────────────────────────── */
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1rem 1.2rem;
+  }
+  .card-grid {
+    display: grid;
+    gap: 0.6rem;
+  }
+  .card-grid-2 { grid-template-columns: 1fr 1fr; }
+  .card-grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+
+  /* ── Tag pills ──────────────────────────── */
+  .pill {
+    display: inline-block;
+    padding: 0.18em 0.65em;
+    border-radius: 999px;
+    font-size: 0.68em;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .pill-teal  { background: rgba(57,210,192,0.15); color: var(--sui-accent); border: 1px solid rgba(57,210,192,0.3); }
+  .pill-blue  { background: rgba(77,162,255,0.15); color: var(--sui-teal);   border: 1px solid rgba(77,162,255,0.3); }
+  .pill-gold  { background: rgba(212,168,67,0.15); color: var(--gold);       border: 1px solid rgba(212,168,67,0.3); }
+  .pill-red   { background: rgba(248,81,73,0.15);  color: var(--red);        border: 1px solid rgba(248,81,73,0.3); }
+  .pill-green { background: rgba(63,185,80,0.15);  color: var(--green);      border: 1px solid rgba(63,185,80,0.3); }
+
+  /* ── Step flow ──────────────────────────── */
+  .steps { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.45rem; }
+  .steps li {
+    display: flex; align-items: flex-start; gap: 0.75rem;
+    background: var(--card-bg); border: 1px solid var(--border);
+    border-radius: 10px; padding: 0.55rem 0.9rem; font-size: 0.78em;
+  }
+  .steps .num {
+    min-width: 1.5em; height: 1.5em; border-radius: 50%;
+    background: var(--sui-accent); color: #06090f;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 0.8em; flex-shrink: 0;
+  }
+
+  /* ── Two-column layout ──────────────────── */
+  .cols { display: grid; gap: 1.5rem; }
+  .cols-2 { grid-template-columns: 1fr 1fr; }
+  .cols-6040 { grid-template-columns: 1.4fr 1fr; }
+
+  /* ── Code block ─────────────────────────── */
+  .code-block {
+    background: #0d1117; border: 1px solid #1a2332;
+    border-radius: 10px; padding: 0.9rem 1.1rem;
+    font-family: "Cascadia Code", "Fira Code", monospace;
+    font-size: 0.68em; line-height: 1.7; text-align: left;
+    color: #c9d1d9;
+  }
+  .code-block .hl  { color: var(--sui-accent); }
+  .code-block .dim { color: var(--dim); }
+  .code-block .red { color: var(--red); }
+
+  /* ── Big stat ───────────────────────────── */
+  .stat-big { font-size: 2.8em; font-weight: 800; line-height: 1; }
+
+  /* ── Table ──────────────────────────────── */
+  .vs-table { width: 100%; border-collapse: collapse; font-size: 0.75em; }
+  .vs-table th { color: var(--dim); font-weight: 600; padding: 0.4rem 0.6rem; border-bottom: 1px solid var(--border); text-align: left; }
+  .vs-table td { padding: 0.45rem 0.6rem; border-bottom: 1px solid rgba(255,255,255,0.05); }
+  .vs-table tr:last-child td { border-bottom: none; }
+  .vs-table .no  { color: var(--red); }
+  .vs-table .yes { color: var(--green); }
+
+  /* ── Logo mark ──────────────────────────── */
+  .logo-mark {
+    font-size: 1em; font-weight: 800;
+    color: var(--sui-accent); letter-spacing: -0.03em;
+  }
+
+  /* ── Divider line ───────────────────────── */
+  .divider { width: 3rem; height: 3px; background: var(--sui-accent); border-radius: 2px; margin: 0.6rem auto; }
+
+  /* ── Reveal overrides ───────────────────── */
+  .reveal .slides section { padding: 2rem 2.5rem; box-sizing: border-box; }
+  .reveal blockquote { background: none; border: none; box-shadow: none; font-style: normal; }
+
+  /* ── Roadmap timeline ───────────────────── */
+  .timeline { display: flex; flex-direction: column; gap: 0.5rem; }
+  .tl-item { display: flex; gap: 1rem; align-items: flex-start; }
+  .tl-dot { width: 10px; height: 10px; border-radius: 50%; margin-top: 0.3em; flex-shrink: 0; }
+  .tl-line { width: 2px; flex-shrink: 0; margin-left: 4px; }
+
+  .reveal .progress { color: var(--sui-accent); }
+  .reveal .controls button { color: var(--sui-accent); }
+</style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+
+<!-- ══════════════════════════════════════════
+     SLIDE 1 — COVER
+══════════════════════════════════════════ -->
+<section class="slide-cover" data-transition="fade">
+  <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:1.2rem;text-align:center;">
+    <div style="font-size:3.2rem;">🗓️</div>
+    <h1 style="margin:0;">Reserve <span class="accent">on Sui</span></h1>
+    <p style="margin:0;font-size:0.9em;color:var(--dim);max-width:520px;">
+      Privacy-first restaurant booking — Google Maps meets Sui blockchain
+    </p>
+    <div class="divider"></div>
+    <div style="display:flex;gap:0.6rem;flex-wrap:wrap;justify-content:center;">
+      <span class="pill pill-blue">Sui Overflow 2026</span>
+      <span class="pill pill-teal">zkLogin</span>
+      <span class="pill pill-gold">Reserve-with-Google</span>
+    </div>
+    <p style="margin:1.5rem 0 0;font-size:0.68em;color:var(--dim);">
+      github.com/s111s/reserve-on-sui
+    </p>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     SLIDE 2 — THE PROBLEM
+══════════════════════════════════════════ -->
+<section class="slide-problem" data-transition="fade">
+  <h2>Every reservation is a <span class="red">privacy leak</span></h2>
+  <p class="dim" style="margin-bottom:1.2rem;">When you book a table today, three things get permanently linked:</p>
+  <div class="card-grid card-grid-3" style="margin-bottom:1.2rem;">
+    <div class="card" style="text-align:center;">
+      <div style="font-size:1.8rem;margin-bottom:0.3rem;">👤</div>
+      <div style="font-weight:700;font-size:0.82em;">Identity</div>
+      <div class="dim" style="font-size:0.7em;margin-top:0.2rem;">Name · Phone · Email</div>
+    </div>
+    <div class="card" style="text-align:center;">
+      <div style="font-size:1.8rem;margin-bottom:0.3rem;">💳</div>
+      <div style="font-weight:700;font-size:0.82em;">Payment</div>
+      <div class="dim" style="font-size:0.7em;margin-top:0.2rem;">Card · Wallet · Amount</div>
+    </div>
+    <div class="card" style="text-align:center;">
+      <div style="font-size:1.8rem;margin-bottom:0.3rem;">📍</div>
+      <div style="font-weight:700;font-size:0.82em;">Location History</div>
+      <div class="dim" style="font-size:0.7em;margin-top:0.2rem;">Where · When · How often</div>
+    </div>
+  </div>
+  <div class="card" style="border-color:rgba(248,81,73,0.3);background:rgba(248,81,73,0.06);">
+    <p style="margin:0;font-size:0.78em;">
+      Worse — if you pay with a <strong>crypto wallet</strong>, your public address joins that profile.
+      Wallets are permanent and traceable. <span class="red">Every transaction you've ever made becomes part of your dining record.</span>
+    </p>
+  </div>
+  <p style="margin-top:1rem;font-size:0.8em;font-weight:700;color:var(--sui-accent);">
+    "Nobody should have to choose between a convenient reservation and their privacy."
+  </p>
+</section>
+
+<!-- ══════════════════════════════════════════
+     SLIDE 3 — MARKET SIZE
+══════════════════════════════════════════ -->
+<section class="slide-dark" data-transition="fade">
+  <h2>The <span class="accent">opportunity</span></h2>
+  <div class="card-grid card-grid-3" style="margin:1.2rem 0;">
+    <div class="card" style="text-align:center;padding:1.4rem 1rem;">
+      <div class="stat-big blue">400K+</div>
+      <div class="dim" style="font-size:0.7em;margin-top:0.4rem;">Registered restaurants<br/>in Thailand alone</div>
+    </div>
+    <div class="card" style="text-align:center;padding:1.4rem 1rem;">
+      <div class="stat-big accent">#1</div>
+      <div class="dim" style="font-size:0.7em;margin-top:0.4rem;">Google Maps — dominant<br/>restaurant discovery tool</div>
+    </div>
+    <div class="card" style="text-align:center;padding:1.4rem 1rem;">
+      <div class="stat-big gold">0</div>
+      <div class="dim" style="font-size:0.7em;margin-top:0.4rem;">Crypto knowledge needed<br/>from the end user</div>
+    </div>
+  </div>
+  <div class="card" style="border-color:rgba(57,210,192,0.25);background:rgba(57,210,192,0.05);">
+    <p style="margin:0;font-size:0.78em;line-height:1.6;">
+      The funnel is already built — users who click <strong>"Reserve"</strong> on Google Maps are
+      <strong class="accent">high-intent, right now</strong>. We intercept that moment and bring it on-chain,
+      with nothing more than a Google login.
+    </p>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     SLIDE 4 — WHAT IT DOES
+══════════════════════════════════════════ -->
+<section class="slide-solution" data-transition="fade">
+  <h2>What <span class="accent">Reserve on Sui</span> does</h2>
+  <p class="dim" style="font-size:0.78em;margin-bottom:1rem;">
+    Connects Google Maps "Reserve" to a privacy-preserving payment on Sui — splitting identity from payment.
+  </p>
+  <div class="cols cols-2" style="align-items:start;">
+    <div>
+      <div class="card" style="margin-bottom:0.6rem;border-color:rgba(57,210,192,0.25);">
+        <div style="font-size:0.72em;color:var(--dim);margin-bottom:0.3rem;">🍽️ Restaurant receives</div>
+        <div style="font-size:0.82em;">Name · Phone · Email</div>
+        <div style="font-size:0.68em;color:var(--dim);margin-top:0.2rem;">They need it to seat you</div>
+      </div>
+      <div class="card" style="margin-bottom:0.6rem;border-color:rgba(77,162,255,0.25);">
+        <div style="font-size:0.72em;color:var(--dim);margin-bottom:0.3rem;">⛓️ Blockchain records</div>
+        <div style="font-size:0.82em;">Proof that <em>someone</em> paid</div>
+        <div style="font-size:0.68em;color:var(--dim);margin-top:0.2rem;">Not <em>who</em> — commitment hash only</div>
+      </div>
+      <div class="card" style="border-color:rgba(63,185,80,0.25);">
+        <div style="font-size:0.72em;color:var(--dim);margin-bottom:0.3rem;">🔒 Never linked</div>
+        <div style="font-size:0.82em;">Wallet ≠ Identity</div>
+        <div style="font-size:0.68em;color:var(--dim);margin-top:0.2rem;">Mathematically separated</div>
+      </div>
+    </div>
+    <div>
+      <div class="card" style="height:100%;box-sizing:border-box;">
+        <div style="font-size:0.72em;color:var(--dim);margin-bottom:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;">Also included</div>
+        <div style="display:flex;flex-direction:column;gap:0.55rem;">
+          <div style="display:flex;gap:0.6rem;align-items:center;font-size:0.78em;">
+            <span style="font-size:1.1em;">🎯</span> On-chain BookingReceipt NFT
+          </div>
+          <div style="display:flex;gap:0.6rem;align-items:center;font-size:0.78em;">
+            <span style="font-size:1.1em;">🎁</span> Loyalty points earned per booking
+          </div>
+          <div style="display:flex;gap:0.6rem;align-items:center;font-size:0.78em;">
+            <span style="font-size:1.1em;">🏆</span> Tier system: Bronze → Black Diamond
+          </div>
+          <div style="display:flex;gap:0.6rem;align-items:center;font-size:0.78em;">
+            <span style="font-size:1.1em;">🎟️</span> Redeemable reward vouchers
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     SLIDE 5 — HOW IT WORKS (USER FLOW)
+══════════════════════════════════════════ -->
+<section class="slide-dark" data-transition="fade">
+  <h2>How it works — <span class="accent">9 steps</span></h2>
+  <ul class="steps">
+    <li><span class="num">1</span> Search for a restaurant on <strong>Google Maps</strong></li>
+    <li><span class="num">2</span> Click <strong>"Reserve"</strong> → redirected to Reserve on Sui</li>
+    <li><span class="num">3</span> Pick a time slot, select zone, enter contact info</li>
+    <li><span class="num">4</span> <span class="accent">Sign in with Google</span> — no wallet app needed</li>
+    <li><span class="num">5</span> Sui address derived from Google identity via <strong>zkLogin</strong></li>
+    <li><span class="num">6</span> Gas is sponsored — <span class="green">pay zero SUI</span></li>
+    <li><span class="num">7</span> Pay the deposit in <strong>USDC / USDT / SuiUSD</strong></li>
+    <li><span class="num">8</span> Receive a <strong>BookingReceipt NFT</strong> on-chain</li>
+    <li><span class="num">9</span> Earn loyalty points, redeem rewards</li>
+  </ul>
+  <div class="card" style="margin-top:0.8rem;border-color:rgba(57,210,192,0.3);background:rgba(57,210,192,0.06);text-align:center;">
+    <p style="margin:0;font-size:0.82em;font-weight:700;">
+      No wallet installation. No gas fees. No private key management.<br/>
+      <span class="accent">Just "Sign in with Google" — and you're on-chain.</span>
+    </p>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     SLIDE 6 — PRIVACY DEEP DIVE
+══════════════════════════════════════════ -->
+<section class="slide-dark" data-transition="fade">
+  <h2>The <span class="accent">privacy</span> solution</h2>
+  <div class="cols cols-6040" style="gap:1.2rem;align-items:start;">
+    <div class="code-block">
+      <span class="dim">// What goes on-chain (BookingReceipt NFT)</span><br/>
+      BookingReceipt {<br/>
+      &nbsp;&nbsp;commitment: <span class="hl">SHA-256(booking_id + "::" + address)</span><br/>
+      &nbsp;&nbsp;store_type: <span class="hl">"restaurant"</span><br/>
+      &nbsp;&nbsp;slot_date:  <span class="hl">"2026-06-20"</span> <span class="dim">← date only</span><br/>
+      &nbsp;&nbsp;party_size: <span class="hl">2</span><br/>
+      &nbsp;&nbsp;amount:     <span class="hl">5_000_000</span> <span class="dim">← 5 USDC</span><br/>
+      &nbsp;&nbsp;currency:   <span class="hl">"USDC"</span><br/>
+      }<br/><br/>
+      <span class="dim">// What is NEVER on-chain</span><br/>
+      <span class="red">✗ name, phone, email</span><br/>
+      <span class="red">✗ raw wallet address (only hash)</span><br/>
+      <span class="red">✗ Google sub claim (ZK proof)</span><br/>
+      <span class="red">✗ time of day</span>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:0.6rem;">
+      <div class="card" style="border-color:rgba(57,210,192,0.25);">
+        <div style="font-size:0.7em;color:var(--dim);margin-bottom:0.2rem;">Commitment hash</div>
+        <div style="font-size:0.76em;">One-way proof that <em>this wallet</em> paid for <em>this booking</em> — without revealing either.</div>
+      </div>
+      <div class="card" style="border-color:rgba(77,162,255,0.25);">
+        <div style="font-size:0.7em;color:var(--dim);margin-bottom:0.2rem;">zkLogin privacy</div>
+        <div style="font-size:0.76em;">Google <code>sub</code> claim never revealed on-chain. Different apps → different addresses for same Google account.</div>
+      </div>
+      <div class="card" style="border-color:rgba(63,185,80,0.25);">
+        <div style="font-size:0.7em;color:var(--dim);margin-bottom:0.2rem;">Contact isolation</div>
+        <div style="font-size:0.76em;">Name/phone/email go to restaurant only — never stored on our servers or the blockchain.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     SLIDE 7 — zkLOGIN EXPLAINER
+══════════════════════════════════════════ -->
+<section class="slide-sui" data-transition="fade">
+  <h2><span class="blue">zkLogin</span> — Web2 onboarding to Web3</h2>
+  <p class="dim" style="font-size:0.78em;margin-bottom:1rem;">How a Google account becomes a Sui wallet — with zero crypto knowledge required</p>
+  <div class="card-grid card-grid-3" style="margin-bottom:0.8rem;">
+    <div class="card" style="text-align:center;padding:1rem 0.8rem;">
+      <div style="font-size:1.6rem;margin-bottom:0.4rem;">🔑</div>
+      <div style="font-size:0.76em;font-weight:700;margin-bottom:0.2rem;">Step 1</div>
+      <div style="font-size:0.7em;color:var(--dim);">Click "Sign in with Google"<br/>OAuth flow</div>
+    </div>
+    <div class="card" style="text-align:center;padding:1rem 0.8rem;">
+      <div style="font-size:1.6rem;margin-bottom:0.4rem;">🧮</div>
+      <div style="font-size:0.76em;font-weight:700;margin-bottom:0.2rem;">Step 2</div>
+      <div style="font-size:0.7em;color:var(--dim);">ZK proof generated<br/>Google sub never revealed</div>
+    </div>
+    <div class="card" style="text-align:center;padding:1rem 0.8rem;">
+      <div style="font-size:1.6rem;margin-bottom:0.4rem;">👛</div>
+      <div style="font-size:0.76em;font-weight:700;margin-bottom:0.2rem;">Step 3</div>
+      <div style="font-size:0.7em;color:var(--dim);">Deterministic Sui address<br/>derived — same every login</div>
+    </div>
+  </div>
+  <div class="cols cols-2">
+    <div class="card" style="border-color:rgba(248,81,73,0.25);background:rgba(248,81,73,0.05);">
+      <div style="font-size:0.7em;color:var(--dim);margin-bottom:0.4rem;font-weight:600;">❌ Traditional crypto UX</div>
+      <div style="font-size:0.72em;color:var(--dim);">Install wallet · write seed phrase · buy SUI for gas · understand gas fees · sign scary popups</div>
+    </div>
+    <div class="card" style="border-color:rgba(57,210,192,0.25);background:rgba(57,210,192,0.05);">
+      <div style="font-size:0.7em;color:var(--dim);margin-bottom:0.4rem;font-weight:600;color:var(--sui-accent);">✅ Reserve on Sui</div>
+      <div style="font-size:0.72em;">Sign in with Google. Pay in USDC.<br/><strong class="accent">That's it.</strong></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     SLIDE 8 — SUI TECH STACK
+══════════════════════════════════════════ -->
+<section class="slide-sui" data-transition="fade">
+  <h2>Built on <span class="blue">Sui</span></h2>
+  <table class="vs-table" style="margin-top:0.8rem;">
+    <thead>
+      <tr>
+        <th>Sui Feature</th>
+        <th>How We Use It</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong class="blue">zkLogin</strong></td>
+        <td>Google → Sui address. No wallet app, no seed phrase, no crypto knowledge.</td>
+      </tr>
+      <tr>
+        <td><strong class="accent">Shinami Gas Station</strong></td>
+        <td>Sponsors all gas for zkLogin users. Users pay <strong class="green">zero SUI</strong> — stablecoin only.</td>
+      </tr>
+      <tr>
+        <td><strong class="gold">Move Smart Contracts</strong></td>
+        <td><code>BookingReceipt</code> NFT · <code>PointsLedger</code> · <code>TierRegistry</code> — all on testnet.</td>
+      </tr>
+      <tr>
+        <td><strong class="blue">PTB</strong></td>
+        <td>Payment + NFT mint in one atomic transaction. Both succeed or neither does.</td>
+      </tr>
+      <tr>
+        <td><strong class="accent">Stablecoins</strong></td>
+        <td>USDC / USDT / SuiUSD — price-stable deposits. No volatility risk.</td>
+      </tr>
+      <tr>
+        <td><strong class="green">Gas-free transfers (mainnet)</strong></td>
+        <td>Sui's native feature — removes sponsorship dependency entirely on mainnet.</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ══════════════════════════════════════════
+     SLIDE 9 — DEPLOYED CONTRACTS
+══════════════════════════════════════════ -->
+<section class="slide-dark" data-transition="fade">
+  <h2>Deployed on <span class="accent">Sui Testnet</span></h2>
+  <p class="dim" style="font-size:0.74em;margin-bottom:1rem;">Modules: <code>booking</code> · <code>points</code> · <code>tier</code> · <code>mock_usdc</code> · <code>mock_usdt</code> · <code>mock_suiusd</code></p>
+  <div class="code-block" style="margin-bottom:0.8rem;font-size:0.65em;">
+    <span class="dim">// Package (chain-id 4c78adac · deployed 2025-06-05)</span><br/>
+    <span class="hl">0x26f407255981f625b8fd931c3b422a1ccd9a2e452cce6a7dd5579b44a3cdddf2</span><br/><br/>
+    <span class="dim">// Shared objects</span><br/>
+    PointsLedger  <span class="hl">0x7da00d0e09e5d5adfbfca66ee0694cc49cd6fa8cae03fdd22318ebaed67486b5</span><br/>
+    TierRegistry  <span class="hl">0xed98f89b6895004c6ce4acd09baa3cc25f94e9f64e1316a87d14b6dadb1eb21c</span><br/>
+    TierConfig    <span class="hl">0x43b8bcde6c239162f01d80977f0e3a3f9364c4c76e4d95fd2e956ba69e6f03c3</span>
+  </div>
+  <div class="card-grid card-grid-3">
+    <div class="card" style="text-align:center;">
+      <span class="pill pill-teal">BookingReceipt NFT</span>
+      <div style="font-size:0.68em;color:var(--dim);margin-top:0.4rem;">Privacy-safe commitment hash, store type, date, amount</div>
+    </div>
+    <div class="card" style="text-align:center;">
+      <span class="pill pill-blue">PointsLedger</span>
+      <div style="font-size:0.68em;color:var(--dim);margin-top:0.4rem;">10 pts per $1 · 1 pt per free booking · on-chain balance</div>
+    </div>
+    <div class="card" style="text-align:center;">
+      <span class="pill pill-gold">TierRegistry</span>
+      <div style="font-size:0.68em;color:var(--dim);margin-top:0.4rem;">Quartz → Sapphire → Emerald → Black Diamond</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     SLIDE 10 — CURRENT STAGE
+══════════════════════════════════════════ -->
+<section class="slide-dark" data-transition="fade">
+  <h2>Current stage — <span class="gold">public testing</span></h2>
+  <div class="card" style="border-color:rgba(212,168,67,0.3);background:rgba(212,168,67,0.06);margin-bottom:1rem;">
+    <p style="margin:0;font-size:0.78em;">
+      🔒 Google's <strong>Reserve-with-Google</strong> program is invite-only for partner restaurants.
+      Our backend is integrated and approved for <strong>sandbox testing</strong> with real restaurant data via Aappoint.
+    </p>
+  </div>
+  <table class="vs-table">
+    <thead>
+      <tr>
+        <th>✅ You can test today</th>
+        <th>🚀 Goes live at launch</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Browse real restaurant slots (Aappoint data)</td>
+        <td>Click "Reserve" on any Google Maps listing</td>
+      </tr>
+      <tr>
+        <td>Pay deposit with USDC/USDT/SuiUSD on testnet</td>
+        <td>Real stablecoins on Sui mainnet</td>
+      </tr>
+      <tr>
+        <td>Receive BookingReceipt NFT on Sui testnet</td>
+        <td>NFT on Sui mainnet</td>
+      </tr>
+      <tr>
+        <td>Sign in with Google — zero gas</td>
+        <td>Same + native gas-free transfers</td>
+      </tr>
+      <tr>
+        <td>Earn loyalty points + redeem rewards</td>
+        <td>Same</td>
+      </tr>
+    </tbody>
+  </table>
+  <p style="margin-top:0.8rem;font-size:0.72em;text-align:center;" class="dim">
+    🔗 Try it now: <strong style="color:var(--sui-accent);">dev-sui-booking-point-collect-hd3yycn2oq-as.a.run.app/book?shop_id=194&service_id=347</strong>
+  </p>
+</section>
+
+<!-- ══════════════════════════════════════════
+     SLIDE 11 — ROADMAP
+══════════════════════════════════════════ -->
+<section class="slide-dark" data-transition="fade">
+  <h2>Roadmap — <span class="accent">testnet → mainnet</span></h2>
+  <div class="cols cols-2" style="gap:1.2rem;align-items:start;margin-top:0.8rem;">
+    <div>
+      <div style="font-size:0.7em;font-weight:700;color:var(--sui-accent);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.6rem;">✅ Now (testnet)</div>
+      <div style="display:flex;flex-direction:column;gap:0.4rem;">
+        <div class="card" style="font-size:0.74em;">Full payment flow — mock stablecoins</div>
+        <div class="card" style="font-size:0.74em;">zkLogin with Google — gasless via Shinami</div>
+        <div class="card" style="font-size:0.74em;">Real restaurant slots via Aappoint sandbox</div>
+        <div class="card" style="font-size:0.74em;">BookingReceipt NFT + loyalty points</div>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:0.7em;font-weight:700;color:var(--sui-teal);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.6rem;">🔜 Mainnet launch</div>
+      <div style="display:flex;flex-direction:column;gap:0.4rem;">
+        <div class="card" style="font-size:0.74em;border-color:rgba(77,162,255,0.2);">Live Google Maps "Reserve" integration</div>
+        <div class="card" style="font-size:0.74em;border-color:rgba(77,162,255,0.2);">Real USDC/USDT — native gas-free transfers</div>
+        <div class="card" style="font-size:0.74em;border-color:rgba(77,162,255,0.2);">Encrypted contact info (restaurant's pubkey)</div>
+        <div class="card" style="font-size:0.74em;border-color:rgba(77,162,255,0.2);">Ephemeral wallets — rotate address per booking</div>
+      </div>
+    </div>
+  </div>
+  <div class="card" style="margin-top:0.8rem;border-color:rgba(57,210,192,0.2);">
+    <div style="font-size:0.7em;color:var(--dim);margin-bottom:0.3rem;font-weight:600;">Privacy roadmap</div>
+    <div style="display:flex;gap:0.5rem;flex-wrap:wrap;font-size:0.7em;">
+      <span class="pill pill-teal">Phase 1 · Commitment hash ✅</span>
+      <span class="pill pill-blue">Phase 2 · Encrypted contact</span>
+      <span class="pill pill-gold">Phase 3 · Ephemeral wallets</span>
+      <span class="pill pill-green">Phase 4 · ZK proof of payment</span>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     SLIDE 12 — OUTRO / CTA
+══════════════════════════════════════════ -->
+<section class="slide-cover" data-transition="fade">
+  <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:1.2rem;text-align:center;">
+    <div style="font-size:3rem;">🗓️</div>
+    <h1 style="margin:0;">Reserve <span class="accent">on Sui</span></h1>
+    <div class="divider"></div>
+    <p style="margin:0;max-width:480px;font-size:0.82em;color:var(--dim);line-height:1.7;">
+      Book your table through Google Maps.<br/>
+      Pay the deposit in stablecoin.<br/>
+      Your wallet is never linked to your name.
+    </p>
+    <div class="card" style="margin-top:0.5rem;border-color:rgba(57,210,192,0.3);background:rgba(57,210,192,0.06);padding:1rem 2rem;">
+      <div style="font-size:0.7em;color:var(--dim);margin-bottom:0.3rem;">Try it now</div>
+      <div style="font-size:0.72em;color:var(--sui-accent);font-weight:600;">
+        dev-sui-booking-point-collect-hd3yycn2oq-as.a.run.app<br/>
+        /book?shop_id=194&service_id=347
+      </div>
+    </div>
+    <div style="display:flex;gap:0.6rem;flex-wrap:wrap;justify-content:center;margin-top:0.5rem;">
+      <span class="pill pill-teal">github.com/s111s/reserve-on-sui</span>
+      <span class="pill pill-blue">Sui Overflow 2026</span>
+    </div>
+  </div>
+</section>
+
+</div><!-- /slides -->
+</div><!-- /reveal -->
+
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+<script>
+  Reveal.initialize({
+    hash: true,
+    transition: 'fade',
+    transitionSpeed: 'fast',
+    controls: true,
+    progress: true,
+    center: true,
+    width: 1280,
+    height: 720,
+    margin: 0.04,
+    plugins: [],
+  });
+</script>
+</body>
+</html>

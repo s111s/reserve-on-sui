@@ -1,0 +1,77 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #06090f;
+  --card: #0d1117;
+  --border: #1a2332;
+  --text: #c9d1d9;
+  --text-dim: #8b949e;
+  --text-bright: #f0f6fc;
+  --accent: #39d2c0;
+  --blue: #58a6ff;
+  --green: #3fb950;
+  --orange: #d29922;
+  --purple: #bc8cff;
+  --pink: #f778ba;
+  --red: #f85149;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Segoe UI", -apple-system, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes voucher-drain {
+  from { transform: scaleX(1); }
+  to   { transform: scaleX(0); }
+}
+
+/* ── Black Diamond tier animations ─────────────────────────── */
+@keyframes bd-glow {
+  0%, 100% { box-shadow: 0 0 28px #d4a84338, 0 0 60px #d4a84318, 0 0 100px #d4a84308; }
+  50%       { box-shadow: 0 0 48px #d4a84358, 0 0 90px #d4a84330, 0 0 140px #d4a84314; }
+}
+
+@keyframes bd-border-spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes bd-icon-pulse {
+  0%, 100% { box-shadow: 0 0 14px #d4a84370, 0 0 28px #d4a84330, 0 0 50px #d4a84314; }
+  50%       { box-shadow: 0 0 24px #d4a84399, 0 0 50px #d4a84355, 0 0 80px #d4a84328; }
+}
+
+@keyframes bd-float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-4px); }
+}
+
+@keyframes bd-shimmer {
+  0%   { background-position: -300% center; }
+  100% { background-position: 300% center; }
+}
+
+@keyframes bd-fade-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes expiry-pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.45; }
+}
+
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-thumb { background: #21262d; border-radius: 3px; }
